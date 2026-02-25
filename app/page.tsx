@@ -22,6 +22,7 @@ export default function Dashboard() {
         { role: 'ai', text: '知识库已连接。目前加载的主题：高市早苗政权下的日本战略转型、中日经贸关系演变、亚洲供应链角色重塑。您想查询什么内容？' }
     ]);
     const [activeTab, setActiveTab] = useState('总览');
+    const [isLoading, setIsLoading] = useState(false);
     const [newsList, setNewsList] = useState<any[]>([]);
     const [reportsList, setReportsList] = useState<any[]>([]);
     const mcpUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_MCP_URL || 'http://localhost:4000') : 'http://localhost:4000';
@@ -52,9 +53,10 @@ export default function Dashboard() {
         const newHistory = [...chatHistory, { role: 'user', text: chatInput }];
         setChatHistory(newHistory);
         setChatInput('');
+        setIsLoading(true);
 
         try {
-            const mcpUrl = process.env.NEXT_PUBLIC_MCP_URL || 'http://localhost:4000';
+            const mcpUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_MCP_URL || 'http://localhost:4000') : 'http://localhost:4000';
             const response = await fetch(`${mcpUrl}/api/chat`, {
                 method: 'POST',
                 headers: {
@@ -77,6 +79,8 @@ export default function Dashboard() {
                 ...newHistory,
                 { role: 'ai', text: "❌ 暂时无法连接到你的本地知识库。请确保已在终端运行了 `node mcp-proxy.mjs`，并在 Vercel 配置了环境变量。" }
             ]);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -167,6 +171,11 @@ export default function Dashboard() {
                                         {msg.text}
                                     </div>
                                 ))}
+                                {isLoading && (
+                                    <div className="chat-bubble ai" style={{ opacity: 0.7 }}>
+                                        <span className="typing-indicator">🤖 AI 正在穿透隧道查阅 NotebookLM (约需5-10秒)...</span>
+                                    </div>
+                                )}
                             </div>
                             <div className="chat-input-wrapper">
                                 <form onSubmit={handleChat}>
@@ -176,8 +185,9 @@ export default function Dashboard() {
                                         placeholder="向研究笔记提问..."
                                         value={chatInput}
                                         onChange={(e) => setChatInput(e.target.value)}
+                                        disabled={isLoading}
                                     />
-                                    <button type="submit" className="chat-send">
+                                    <button type="submit" className="chat-send" disabled={isLoading}>
                                         <Send size={18} />
                                     </button>
                                 </form>
