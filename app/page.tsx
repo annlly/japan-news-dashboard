@@ -21,6 +21,7 @@ export default function Dashboard() {
     const [chatHistory, setChatHistory] = useState([
         { role: 'ai', text: '知识库已连接。目前加载的主题：高市早苗政权下的日本战略转型、中日经贸关系演变、亚洲供应链角色重塑。您想查询什么内容？' }
     ]);
+    const [activeTab, setActiveTab] = useState('总览');
     const [newsList, setNewsList] = useState<any[]>([]);
     const [reportsList, setReportsList] = useState<any[]>([]);
     const mcpUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_MCP_URL || 'http://localhost:4000') : 'http://localhost:4000';
@@ -87,11 +88,11 @@ export default function Dashboard() {
                     <h1><span></span> J-CN Intel Hub</h1>
                 </div>
                 <nav>
-                    <a href="#" className="nav-link active"><BarChart3 size={18} /> 总览 (Overview)</a>
-                    <a href="#" className="nav-link"><Globe2 size={18} /> 地缘政治 (Geopolitics)</a>
-                    <a href="#" className="nav-link"><Briefcase size={18} /> 经贸动态 (Economics)</a>
-                    <a href="#" className="nav-link"><Map size={18} /> 供应链追踪 (Supply Chain)</a>
-                    <a href="#" className="nav-link"><FileText size={18} /> 定时报告 (Reports)</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('总览'); }} className={`nav-link ${activeTab === '总览' ? 'active' : ''}`}><BarChart3 size={18} /> 总览 (Overview)</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('政治安保'); }} className={`nav-link ${activeTab === '政治安保' ? 'active' : ''}`}><Globe2 size={18} /> 地缘政治 (Geopolitics)</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('中日经贸'); }} className={`nav-link ${activeTab === '中日经贸' ? 'active' : ''}`}><Briefcase size={18} /> 经贸动态 (Economics)</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('半导体'); }} className={`nav-link ${activeTab === '半导体' ? 'active' : ''}`}><Map size={18} /> 供应链追踪 (Supply Chain)</a>
+                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('定时报告'); }} className={`nav-link ${activeTab === '定时报告' ? 'active' : ''}`}><FileText size={18} /> 定时报告 (Reports)</a>
                 </nav>
             </aside>
 
@@ -137,11 +138,11 @@ export default function Dashboard() {
                 <div className="grid-top animate-fade-in delay-2">
                     {/* Breaking News Feed */}
                     <div className="glass-card">
-                        <h3>日本政经与涉华核心事件追踪</h3>
+                        <h3>{activeTab === '总览' ? '日本政经与涉华核心事件追踪' : `${activeTab} - 专属情报流水线`}</h3>
                         <div className="news-list">
                             {newsList.length === 0 ? (
                                 <div style={{ color: '#a0a0b0', fontSize: '0.9rem', padding: '20px 0' }}>📡 正在从隧道实时拉取最新新闻...</div>
-                            ) : newsList.slice(0, 5).map((news, idx) => (
+                            ) : newsList.filter(news => activeTab === '总览' || activeTab === '定时报告' ? true : news.tag === activeTab).slice(0, 5).map((news, idx) => (
                                 <div className="news-item" key={idx}>
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <span className="news-tag">{news.tag}</span>
