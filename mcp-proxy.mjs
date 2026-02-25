@@ -76,11 +76,21 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-const parser = new Parser();
+const parser = new Parser({
+    customFields: {
+        item: ['dc:creator', 'creator']
+    }
+});
 const feeds = [
+    // Japanese Sources
     { tag: "中日经贸", url: "https://news.google.com/rss/search?q=%E4%B8%AD%E6%97%A5+%E7%B5%8C%E6%B8%88+when:7d&hl=ja&gl=JP&ceid=JP:ja" },
     { tag: "政治安保", url: "https://news.google.com/rss/search?q=%E6%97%A5%E6%9C%AC+%E6%94%BF%E6%B2%BB+%E5%AE%89%E4%BF%9D+when:7d&hl=ja&gl=JP&ceid=JP:ja" },
-    { tag: "半导体", url: "https://news.google.com/rss/search?q=%E5%8D%8A%E5%B0%8E%E4%F%93+%E4%BE%9B%E7%B5%A6%E7%B6%B2+%E4%B8%AD%E5%9B%BD+when:7d&hl=ja&gl=JP&ceid=JP:ja" }
+    { tag: "半导体", url: "https://news.google.com/rss/search?q=%E5%8D%8A%E5%B0%8E%E4%F%93+%E4%BE%9B%E7%B5%A6%E7%B6%B2+%E4%B8%AD%E5%9B%BD+when:7d&hl=ja&gl=JP&ceid=JP:ja" },
+
+    // English & Think Tank Sources
+    { tag: "中日经贸", url: "https://news.google.com/rss/search?q=Japan+China+Economy+trade+when:7d&hl=en-US&gl=US&ceid=US:en" },  // English Google News 
+    { tag: "政治安保", url: "https://www.csis.org/rss/articles" }, // CSIS Think Tank (Top Geopolitics)
+    { tag: "半导体", url: "https://news.google.com/rss/search?q=Supply+chain+semiconductor+China+when:7d&hl=en-US&gl=US&ceid=US:en" } // Tech & Supply Chain English
 ];
 
 app.get('/api/news', async (req, res) => {
