@@ -22,7 +22,7 @@ export default function Dashboard() {
         { role: 'ai', text: '知识库已连接。目前加载的主题：高市早苗政权下的日本战略转型、中日经贸关系演变、亚洲供应链角色重塑。您想查询什么内容？' }
     ]);
 
-    const handleChat = (e: React.FormEvent) => {
+    const handleChat = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!chatInput.trim()) return;
 
@@ -31,13 +31,25 @@ export default function Dashboard() {
         setChatHistory(newHistory);
         setChatInput('');
 
-        // Mock AI response
-        setTimeout(() => {
+        try {
+            const mcpUrl = process.env.NEXT_PUBLIC_MCP_URL || 'http://localhost:4000';
+            const response = await fetch(`${mcpUrl}/api/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: chatInput })
+            });
+            const data = await response.json();
+
             setChatHistory([
                 ...newHistory,
-                { role: 'ai', text: '根据 NotebookLM 库中的《高市早苗政权战略》分析：日本目前正试图通过经济安保法案加强半导体本土制造，并在区域供应链中降低对华依赖，但这在短期内面临成本与规模的双重挑战。' }
+                { role: 'ai', text: data?.answer || data?.error || '无法解析 NotebookLM 响应' }
             ]);
-        }, 1200);
+        } catch (err: any) {
+            setChatHistory([
+                ...newHistory,
+                { role: 'ai', text: "❌ 暂时无法连接到你的本地知识库。请确保已在终端运行了 `node mcp-proxy.mjs`，并在 Vercel 配置了环境变量。" }
+            ]);
+        }
     };
 
     return (
