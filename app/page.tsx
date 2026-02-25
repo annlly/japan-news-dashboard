@@ -199,7 +199,25 @@ export default function Dashboard() {
                                     文件大小: {(report.size / 1024).toFixed(2)} KB <br />
                                     生成时间: {new Date(report.date).toLocaleString()}
                                 </div>
-                                <button onClick={() => window.open(`${mcpUrl}/api/reports/download/${report.filename}`, '_blank')} style={{ background: '#3366ff', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>下载查看 Markdown</button>
+                                <button onClick={async () => {
+                                    try {
+                                        const res = await fetch(`${mcpUrl}/api/reports/download/${report.filename}`, {
+                                            headers: { 'Bypass-Tunnel-Reminder': 'true' }
+                                        });
+                                        const blob = await res.blob();
+                                        const url = window.URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.style.display = 'none';
+                                        a.href = url;
+                                        a.download = report.filename;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        window.URL.revokeObjectURL(url);
+                                    } catch (e) {
+                                        console.error('Download failed', e);
+                                        alert('下载报告失败，请检查终端代理是否开启。');
+                                    }
+                                }} style={{ background: '#3366ff', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>下载查看 Markdown</button>
                             </div>
                         ))}
                     </div>
