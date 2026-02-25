@@ -27,7 +27,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         // Fetch real news
-        fetch(`${mcpUrl}/api/news`)
+        fetch(`${mcpUrl}/api/news`, { headers: { 'Bypass-Tunnel-Reminder': 'true' } })
             .then(res => res.json())
             .then(data => {
                 if (data.news) setNewsList(data.news);
@@ -35,7 +35,7 @@ export default function Dashboard() {
             .catch(console.error);
 
         // Fetch real reports
-        fetch(`${mcpUrl}/api/reports`)
+        fetch(`${mcpUrl}/api/reports`, { headers: { 'Bypass-Tunnel-Reminder': 'true' } })
             .then(res => res.json())
             .then(data => {
                 if (data.reports) setReportsList(data.reports);
@@ -56,7 +56,10 @@ export default function Dashboard() {
             const mcpUrl = process.env.NEXT_PUBLIC_MCP_URL || 'http://localhost:4000';
             const response = await fetch(`${mcpUrl}/api/chat`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Bypass-Tunnel-Reminder': 'true'
+                },
                 body: JSON.stringify({
                     question: chatInput,
                     notebook_id: 'japan-news-intel-hub'
