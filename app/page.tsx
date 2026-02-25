@@ -36,7 +36,10 @@ export default function Dashboard() {
             const response = await fetch(`${mcpUrl}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: chatInput })
+                body: JSON.stringify({
+                    question: chatInput,
+                    notebook_id: 'japan-news-intel-hub'
+                })
             });
             const data = await response.json();
 
