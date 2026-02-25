@@ -14,12 +14,40 @@ const feeds = [
         url: "https://news.google.com/rss/search?q=%E4%B8%AD%E6%97%A5+%E7%B5%8C%E6%B8%88+when:7d&hl=ja&gl=JP&ceid=JP:ja"
     },
     {
+        name: "中日经贸 (英文视角)",
+        url: "https://news.google.com/rss/search?q=Japan+China+Economy+trade+when:7d&hl=en-US&gl=US&ceid=US:en"
+    },
+    {
         name: "日本政治安保 (Google News)",
         url: "https://news.google.com/rss/search?q=%E6%97%A5%E6%9C%AC+%E6%94%BF%E6%B2%BB+%E5%AE%89%E4%BF%9D+when:7d&hl=ja&gl=JP&ceid=JP:ja"
     },
     {
-        name: "半导体供应链 (Google News)",
+        name: "地缘政治与安全 (CSIS 智库)",
+        url: "https://www.csis.org/rss/articles"
+    },
+    {
+        name: "半导体供应链 (Google News JP)",
         url: "https://news.google.com/rss/search?q=%E5%8D%8A%E5%B0%8E%E4%F%93+%E4%BE%9B%E7%B5%A6%E7%B6%B2+%E4%B8%AD%E5%9B%BD+when:7d&hl=ja&gl=JP&ceid=JP:ja"
+    },
+    {
+        name: "半导体供应链 (英文视角)",
+        url: "https://news.google.com/rss/search?q=Supply+chain+semiconductor+China+when:7d&hl=en-US&gl=US&ceid=US:en"
+    },
+    {
+        name: "日本政策型智库 (JIIA & NIDS)",
+        url: "https://news.google.com/rss/search?q=(日本国際問題研究所+OR+防衛研究所)+when:14d&hl=ja&gl=JP&ceid=JP:ja"
+    },
+    {
+        name: "日本经济政策智库 (RIETI, IDE-JETRO, NIRA)",
+        url: "https://news.google.com/rss/search?q=(経済産業研究所+OR+アジア経済研究所+OR+総合研究開発機構)+when:14d&hl=ja&gl=JP&ceid=JP:ja"
+    },
+    {
+        name: "日本企业型综合智库 (NRI, MRI, JRI)",
+        url: "https://news.google.com/rss/search?q=(野村総合研究所+OR+三菱総合研究所+OR+日本総合研究所)+when:14d&hl=ja&gl=JP&ceid=JP:ja"
+    },
+    {
+        name: "日本金融智库与半导体 (MURC, Mizuho)",
+        url: "https://news.google.com/rss/search?q=(三菱UFJリサーチ＆コンサルティング+OR+みずほリサーチ)+半導体+when:14d&hl=ja&gl=JP&ceid=JP:ja"
     }
 ];
 

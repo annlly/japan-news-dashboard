@@ -19,10 +19,9 @@ let mcpClient = null;
 async function getMcpClient() {
     if (mcpClient) return mcpClient;
 
-    console.log('🔄 Initializing NotebookLM MCP Connection...');
     const transport = new StdioClientTransport({
-        command: 'npx',
-        args: ['-y', 'notebooklm-mcp@latest']
+        command: 'sh',
+        args: ['-c', 'cd /tmp && npx -y notebooklm-mcp@latest']
     });
 
     const client = new Client(
@@ -71,7 +70,7 @@ app.post('/api/chat', async (req, res) => {
         res.json({ answer: answerText });
 
     } catch (error) {
-        console.error('❌ MCP Error:', error.message);
+        console.error('❌ MCP Error:', error.stack);
         res.status(500).json({ error: error.message });
     }
 });
@@ -90,7 +89,13 @@ const feeds = [
     // English & Think Tank Sources
     { tag: "中日经贸", url: "https://news.google.com/rss/search?q=Japan+China+Economy+trade+when:7d&hl=en-US&gl=US&ceid=US:en" },  // English Google News 
     { tag: "政治安保", url: "https://www.csis.org/rss/articles" }, // CSIS Think Tank (Top Geopolitics)
-    { tag: "半导体", url: "https://news.google.com/rss/search?q=Supply+chain+semiconductor+China+when:7d&hl=en-US&gl=US&ceid=US:en" } // Tech & Supply Chain English
+    { tag: "半导体", url: "https://news.google.com/rss/search?q=Supply+chain+semiconductor+China+when:7d&hl=en-US&gl=US&ceid=US:en" }, // Tech & Supply Chain English
+
+    // Japanese Think Tanks (政策型 / 综合企业型智库)
+    { tag: "政治安保", url: "https://news.google.com/rss/search?q=(日本国際問題研究所+OR+防衛研究所)+when:14d&hl=ja&gl=JP&ceid=JP:ja" }, // JIIA & NIDS
+    { tag: "中日经贸", url: "https://news.google.com/rss/search?q=(経済産業研究所+OR+アジア経済研究所+OR+総合研究開発機構)+when:14d&hl=ja&gl=JP&ceid=JP:ja" }, // RIETI, IDE-JETRO, NIRA
+    { tag: "中日经贸", url: "https://news.google.com/rss/search?q=(野村総合研究所+OR+三菱総合研究所+OR+日本総合研究所)+when:14d&hl=ja&gl=JP&ceid=JP:ja" }, // NRI, MRI, JRI
+    { tag: "半导体", url: "https://news.google.com/rss/search?q=(三菱UFJリサーチ＆コンサルティング+OR+みずほリサーチ)+半導体+when:14d&hl=ja&gl=JP&ceid=JP:ja" } // MURC, Mizuho + Supply Chain
 ];
 
 app.get('/api/news', async (req, res) => {
