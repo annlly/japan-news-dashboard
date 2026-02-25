@@ -23,7 +23,7 @@ const feeds = [
     },
     {
         name: "地缘政治与安全 (CSIS 智库)",
-        url: "https://www.csis.org/rss/articles"
+        url: "https://news.google.com/rss/search?q=CSIS+China+Geopolitics+when:14d&hl=en-US&gl=US&ceid=US:en"
     },
     {
         name: "半导体供应链 (Google News JP)",
@@ -68,7 +68,8 @@ async function fetchAndGenerateReport() {
     for (const feed of feeds) {
         try {
             console.log(`📡 正在抓取: ${feed.name}...`);
-            const parsed = await parser.parseURL(feed.url);
+            const safeUrl = encodeURI(feed.url).replace(/\(/g, '%28').replace(/\)/g, '%29');
+            const parsed = await parser.parseURL(safeUrl);
 
             markdownContent += `## 📌 主题：${feed.name}\n\n`;
 

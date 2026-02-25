@@ -88,7 +88,7 @@ const feeds = [
 
     // English & Think Tank Sources
     { tag: "中日经贸", url: "https://news.google.com/rss/search?q=Japan+China+Economy+trade+when:7d&hl=en-US&gl=US&ceid=US:en" },  // English Google News 
-    { tag: "政治安保", url: "https://www.csis.org/rss/articles" }, // CSIS Think Tank (Top Geopolitics)
+    { tag: "政治安保", url: "https://news.google.com/rss/search?q=CSIS+China+Geopolitics+when:14d&hl=en-US&gl=US&ceid=US:en" }, // CSIS Think Tank (Top Geopolitics)
     { tag: "半导体", url: "https://news.google.com/rss/search?q=Supply+chain+semiconductor+China+when:7d&hl=en-US&gl=US&ceid=US:en" }, // Tech & Supply Chain English
 
     // Japanese Think Tanks (政策型 / 综合企业型智库)
@@ -102,15 +102,21 @@ app.get('/api/news', async (req, res) => {
     try {
         let allNews = [];
         for (const feed of feeds) {
-            const parsed = await parser.parseURL(feed.url);
-            const items = parsed.items.slice(0, 3).map(i => ({
-                title: i.title,
-                link: i.link,
-                pubDate: i.pubDate,
-                source: i.source || '新闻来源',
-                tag: feed.tag
-            }));
-            allNews = allNews.concat(items);
+            try {
+                // Encode Japanese chars and parentheses properly for the node http client
+                const safeUrl = encodeURI(feed.url).replace(/\(/g, '%28').replace(/\)/g, '%29');
+                const parsed = await parser.parseURL(safeUrl);
+                const items = parsed.items.slice(0, 3).map(i => ({
+                    title: i.title,
+                    link: i.link,
+                    pubDate: i.pubDate,
+                    source: i.source || '新闻来源',
+                    tag: feed.tag
+                }));
+                allNews = allNews.concat(items);
+            } catch (err) {
+                console.error(`❌ RSS Fetch Error for ${feed.tag} (${feed.url}):`, err.message);
+            }
         }
         res.json({ news: allNews.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate)) });
     } catch (err) {
