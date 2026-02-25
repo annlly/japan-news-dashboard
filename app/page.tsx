@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     BarChart3,
     Map,
@@ -21,6 +21,27 @@ export default function Dashboard() {
     const [chatHistory, setChatHistory] = useState([
         { role: 'ai', text: '知识库已连接。目前加载的主题：高市早苗政权下的日本战略转型、中日经贸关系演变、亚洲供应链角色重塑。您想查询什么内容？' }
     ]);
+    const [newsList, setNewsList] = useState<any[]>([]);
+    const [reportsList, setReportsList] = useState<any[]>([]);
+    const mcpUrl = typeof window !== 'undefined' ? (process.env.NEXT_PUBLIC_MCP_URL || 'http://localhost:4000') : 'http://localhost:4000';
+
+    useEffect(() => {
+        // Fetch real news
+        fetch(`${mcpUrl}/api/news`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.news) setNewsList(data.news);
+            })
+            .catch(console.error);
+
+        // Fetch real reports
+        fetch(`${mcpUrl}/api/reports`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.reports) setReportsList(data.reports);
+            })
+            .catch(console.error);
+    }, [mcpUrl]);
 
     const handleChat = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -115,48 +136,20 @@ export default function Dashboard() {
                     <div className="glass-card">
                         <h3>日本政经与涉华核心事件追踪</h3>
                         <div className="news-list">
-                            <div className="news-item">
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <span className="news-tag">经济安保</span>
-                                    <span className="news-tag blue">涉华</span>
+                            {newsList.length === 0 ? (
+                                <div style={{ color: '#a0a0b0', fontSize: '0.9rem', padding: '20px 0' }}>📡 正在从隧道实时拉取最新新闻...</div>
+                            ) : newsList.slice(0, 5).map((news, idx) => (
+                                <div className="news-item" key={idx}>
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <span className="news-tag">{news.tag}</span>
+                                        <span className="news-tag blue">{news.source}</span>
+                                    </div>
+                                    <a href={news.link} target="_blank" rel="noreferrer" className="news-title" style={{ textDecoration: 'none' }}>{news.title}</a>
+                                    <div className="news-meta">
+                                        <span>发布时间: {new Date(news.pubDate).toLocaleString()}</span>
+                                    </div>
                                 </div>
-                                <div className="news-title">日本政府拟扩大尖端技术出口管制范围，半导体材料及制造设备为重点监控对象</div>
-                                <div className="news-meta">
-                                    <span>来自: 日本经济新闻 (Nikkei)</span>
-                                    <span>2 小时前</span>
-                                </div>
-                            </div>
-                            <div className="news-item">
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <span className="news-tag blue">政治</span>
-                                </div>
-                                <div className="news-title">自民党内部派阀重组：高市早苗派系提出新版“亚洲印太战略”框架，强调供应链韧性</div>
-                                <div className="news-meta">
-                                    <span>来自: 读卖新闻 (Yomiuri)</span>
-                                    <span>5 小时前</span>
-                                </div>
-                            </div>
-                            <div className="news-item">
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <span className="news-tag">经贸</span>
-                                    <span className="news-tag blue">涉华</span>
-                                </div>
-                                <div className="news-title">中日举行第X轮高级别双边经济对话，焦点集中于新能源汽车市场准入与反倾销调查</div>
-                                <div className="news-meta">
-                                    <span>来自: 共同社 (Kyodo)</span>
-                                    <span>14 小时前</span>
-                                </div>
-                            </div>
-                            <div className="news-item">
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <span className="news-tag">宏观</span>
-                                </div>
-                                <div className="news-title">日本央行结束负利率时代后的首次政策评估会议：对企业出海投资的影响深度分析</div>
-                                <div className="news-meta">
-                                    <span>来自: 彭博社 (Bloomberg JP)</span>
-                                    <span>昨天</span>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
 
@@ -193,19 +186,19 @@ export default function Dashboard() {
                 <div className="glass-card animate-fade-in delay-3">
                     <h3>定时分析报告 (Automated Reports)</h3>
                     <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                        <div style={{ flex: 1, minWidth: '250px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <FileText size={24} color="#3366ff" style={{ marginBottom: '12px' }} />
-                            <div style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '8px' }}>本周地缘经济纪要</div>
-                            <div style={{ fontSize: '0.85rem', color: '#a0a0b0', marginBottom: '16px' }}>系统已于周一 08:00 自动生成了整合过去7天新闻与NotebookLM洞察的综述报告。</div>
-                            <button style={{ background: '#3366ff', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>下载 PDF</button>
-                        </div>
-
-                        <div style={{ flex: 1, minWidth: '250px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                            <BarChart3 size={24} color="#ff3366" style={{ marginBottom: '12px' }} />
-                            <div style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '8px' }}>中日经贸月度简报</div>
-                            <div style={{ fontSize: '0.85rem', color: '#a0a0b0', marginBottom: '16px' }}>基于海关数据与学术知识库对比生成的月度双边贸易分析，下个月 1 号自动生成。</div>
-                            <button style={{ background: 'transparent', color: '#ff3366', border: '1px solid #ff3366', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>查看上期</button>
-                        </div>
+                        {reportsList.length === 0 ? (
+                            <div style={{ color: '#a0a0b0', fontSize: '0.9rem' }}>目前没有找到生成的报告，请在终端执行抓取脚本。</div>
+                        ) : reportsList.map((report, idx) => (
+                            <div key={idx} style={{ flex: 1, minWidth: '250px', background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <FileText size={24} color="#3366ff" style={{ marginBottom: '12px' }} />
+                                <div style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '8px' }}>{report.filename.replace('.md', '')}</div>
+                                <div style={{ fontSize: '0.85rem', color: '#a0a0b0', marginBottom: '16px' }}>
+                                    文件大小: {(report.size / 1024).toFixed(2)} KB <br />
+                                    生成时间: {new Date(report.date).toLocaleString()}
+                                </div>
+                                <button onClick={() => window.open(`${mcpUrl}/api/reports/download/${report.filename}`, '_blank')} style={{ background: '#3366ff', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}>下载查看 Markdown</button>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </main>
