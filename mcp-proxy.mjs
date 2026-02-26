@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = 4000;
-const SUBDOMAIN = 'japan-intel-mcp-tunnel-' + Math.floor(Math.random() * 10000);
+const SUBDOMAIN = 'japan-intel-mcp-tunnel-vip';
 
 let mcpClient = null;
 
