@@ -24,4 +24,4 @@ A multi-platform intelligence dashboard aggregating Japanese political/economic 
 - [x] Japanese news functionality is preserved.
 - [x] Removed NotebookLM integration and report generation.
 - [x] Codebase cleaned (removed `@modelcontextprotocol/sdk`, proxies, scripts).
-- [ ] Deployed to GitHub and Vercel.
+- [x] Deployed to GitHub and Vercel.
